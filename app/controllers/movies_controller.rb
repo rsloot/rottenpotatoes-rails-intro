@@ -11,13 +11,37 @@ class MoviesController < ApplicationController
   end
 
   def index
+    # session.clear
+    if params[:sort].nil?
+      sort = session[:sort]
+      params[:sort] = sort
+    else
+      params[:sort]
+      session.delete(:sort)
+    end
+    
+    # if params[:order].nil? 
+    #   params[:order] = order
+    # end
     sort = params[:sort]
     order = params[:order]
     @order = (order.nil? || order == 'desc') ? 'asc' : 'desc'
 
     @all_ratings = Movie.all_ratings
     ratings = params[:ratings]
-    @ratings = ratings.nil? ? Movie.all_ratings : ratings.keys
+    if ratings.nil?
+      if session[:ratings].nil?
+        @ratings = Movie.all_ratings
+      else
+        @ratings = session[:ratings]
+      end
+    else
+      @ratings = ratings.keys
+      session.delete(:ratings)
+    end
+    session[:order] = @order
+    session[:sort] = sort
+    session[:ratings] = @ratings
     @movies = Movie.order("#{sort} #{order}").where('rating IN (?)', @ratings).all
   end
   
