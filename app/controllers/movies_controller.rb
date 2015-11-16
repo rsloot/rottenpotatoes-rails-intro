@@ -11,9 +11,16 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
-  end
+    sort = params[:sort]
+    order = params[:order]
+    @order = (order.nil? || order == 'desc') ? 'asc' : 'desc'
 
+    # @all_ratings = Movie.all_ratings
+    ratings = params[:ratings]
+    @ratings = ratings.nil? ? Movie.all_ratings : ratings.keys
+    @movies = Movie.order("#{sort} #{order}").where('rating IN (?)', @ratings).all
+  end
+  
   def new
     # default: render 'new' template
   end
