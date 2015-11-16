@@ -37,6 +37,7 @@ class MoviesController < ApplicationController
       end
     else
       @ratings = ratings.keys
+      redirect_to movies_path()
       session.delete(:ratings)
     end
     session[:order] = @order
